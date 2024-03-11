@@ -7,13 +7,13 @@ import { MatTableDataSource } from '@angular/material/table'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ChallengeService } from '../Services/challenge.service'
 import { ConfigurationService } from '../Services/configuration.service'
-import { type AfterViewInit, Component, NgZone, type OnInit } from '@angular/core'
+import { type AfterViewInit, Component, NgZone, type OnInit, SecurityContext } from '@angular/core'
 import { SocketIoService } from '../Services/socket-io.service'
 import { NgxSpinnerService } from 'ngx-spinner'
 import { ActivatedRoute } from '@angular/router'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faStar, faTrophy, faPollH } from '@fortawesome/free-solid-svg-icons'
+import { faPollH, faStar, faTrophy } from '@fortawesome/free-solid-svg-icons'
 import { faGem } from '@fortawesome/free-regular-svg-icons'
 import { faBtc, faGithub, faGitter } from '@fortawesome/free-brands-svg-icons'
 import { type Challenge } from '../Models/challenge.model'
@@ -213,7 +213,7 @@ export class ScoreBoardLegacyComponent implements OnInit, AfterViewInit {
   }
 
   trustDescriptionHtml (challenge: Challenge) {
-    challenge.description = this.sanitizer.bypassSecurityTrustHtml(challenge.description as string)
+    challenge.description = this.sanitizer.sanitize(SecurityContext.HTML, challenge.description as string)
   }
 
   calculateCodingProgressPercentage () {

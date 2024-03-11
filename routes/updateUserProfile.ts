@@ -10,6 +10,7 @@ import * as utils from '../lib/utils'
 
 const security = require('../lib/insecurity')
 const cache = require('../data/datacache')
+const sanitizeHtml = require('sanitize-html')
 const challenges = cache.challenges
 
 module.exports = function updateUserProfile () {
@@ -24,7 +25,7 @@ module.exports = function updateUserProfile () {
               (req.headers.referer?.includes('://htmledit.squarefree.com'))) &&
               req.body.username !== user.username
           })
-          void user.update({ username: req.body.username }).then((savedUser: UserModel) => {
+          void user.update({ username: sanitizeHtml(req.body.username) }).then((savedUser: UserModel) => {
             // @ts-expect-error FIXME some properties missing in savedUser
             savedUser = utils.queryResultToJson(savedUser)
             const updatedToken = security.authorize(savedUser)

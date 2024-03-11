@@ -1,8 +1,8 @@
-import { Component, NgZone, type OnDestroy, type OnInit } from '@angular/core'
+import { Component, NgZone, type OnDestroy, type OnInit, SecurityContext } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { DomSanitizer } from '@angular/platform-browser'
 import { MatDialog } from '@angular/material/dialog'
-import { type Subscription, combineLatest } from 'rxjs'
+import { combineLatest, type Subscription } from 'rxjs'
 
 import { fromQueryParams, toQueryParams } from './filter-settings/query-params-converters'
 import { DEFAULT_FILTER_SETTING, type FilterSetting } from './filter-settings/FilterSetting'
@@ -68,7 +68,7 @@ export class ScoreBoardComponent implements OnInit, OnDestroy {
           ...challenge,
           tagList: challenge.tags ? challenge.tags.split(',').map((tag) => tag.trim()) : [],
           originalDescription: challenge.description as string,
-          description: this.sanitizer.bypassSecurityTrustHtml(challenge.description as string),
+          description: this.sanitizer.sanitize(SecurityContext.HTML, challenge.description as string),
           hasCodingChallenge: challengeKeysWithCodeChallenges.includes(challenge.key)
         }
       })
