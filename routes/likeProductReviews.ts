@@ -6,13 +6,24 @@
 import challengeUtils = require('../lib/challengeUtils')
 import { type Request, type Response, type NextFunction } from 'express'
 import { type Review } from '../data/types'
+import { object, string } from 'yup'
 
 const challenges = require('../data/datacache').challenges
 const db = require('../data/mongodb')
 const security = require('../lib/insecurity')
 
+const productReviewRequestSchema = object({
+  id: string().required().length(17).matches(/^[a-zA-Z0-9]+$/)
+})
+
 module.exports = function productReviews () {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await productReviewRequestSchema.validate(req.body)
+    } catch (ex: any) {
+      console.error(ex.message)
+      return res.status(400).json({ error: 'Invalid request body' })
+    }
     const id = req.body.id
     const user = security.authenticatedUsers.from(req)
     db.reviews.findOne({ _id: id }).then((review: Review) => {
