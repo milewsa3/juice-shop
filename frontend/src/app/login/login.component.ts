@@ -15,6 +15,7 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 import { FormSubmitService } from '../Services/form-submit.service'
 import { ConfigurationService } from '../Services/configuration.service'
 import { BasketService } from '../Services/basket.service'
+import { v4 as uuidv4 } from 'uuid';
 
 library.add(faKey, faEye, faEyeSlash, faGoogle)
 
@@ -69,6 +70,15 @@ export class LoginComponent implements OnInit {
     this.formSubmitService.attachEnterKeyHandler('login-form', 'loginButton', () => { this.login() })
   }
 
+  private makeRandom (lengthOfCode: number) {
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-'
+    let text = ''
+    for (let i = 0; i < lengthOfCode; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length))
+    }
+    return text
+  }
+
   login () {
     this.user = {}
     this.user.email = this.emailControl.value
@@ -105,6 +115,10 @@ export class LoginComponent implements OnInit {
   }
 
   googleLogin () {
-    this.windowRefService.nativeWindow.location.replace(`${oauthProviderUrl}?client_id=${this.clientId}&response_type=token&scope=email&redirect_uri=${this.redirectUri}`)
+    const state = this.makeRandom(18)
+    sessionStorage.setItem('state', state)
+    this.windowRefService.nativeWindow.location.replace(
+      `${oauthProviderUrl}?client_id=${this.clientId}&response_type=token&scope=email&redirect_uri=${this.redirectUri}&state=${state}`
+    )
   }
 }
