@@ -6,13 +6,15 @@
 import utils = require('../lib/utils')
 import challengeUtils = require('../lib/challengeUtils')
 import { type Request, type Response } from 'express'
+import sanitizeHtml from "sanitize-html";
 
 const challenges = require('../data/datacache').challenges
 const db = require('../data/mongodb')
 
 module.exports = function trackOrder () {
   return (req: Request, res: Response) => {
-    const id = utils.disableOnContainerEnv() ? String(req.params.id).replace(/[^\w-]+/g, '') : req.params.id
+    let id = utils.disableOnContainerEnv() ? String(req.params.id).replace(/[^\w-]+/g, '') : req.params.id
+    id = sanitizeHtml(id).replace(/[^a-zA-Z0-9-]/g, '')
 
     challengeUtils.solveIf(challenges.reflectedXssChallenge, () => { return utils.contains(id, '<iframe src="javascript:alert(`xss`)">') })
     db.orders.find({ $where: `this.orderId === '${id}'` }).then((order: any) => {
