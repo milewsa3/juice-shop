@@ -6,7 +6,7 @@
 import utils = require('../lib/utils')
 import challengeUtils = require('../lib/challengeUtils')
 import { type Request, type Response } from 'express'
-import sanitizeHtml from "sanitize-html";
+import sanitizeHtml from 'sanitize-html'
 
 const challenges = require('../data/datacache').challenges
 const db = require('../data/mongodb')
